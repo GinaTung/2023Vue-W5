@@ -21,7 +21,8 @@
                 <!-- 產品Modal -->
 
                 <!-- 產品Modal -->
-
+                <!--資料到底是否有存入↓↓  -->
+                <!-- {{products}} -->
                 <table class="table align-middle">
                     <thead>
                         <tr>
@@ -32,9 +33,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <!-- 需跑迴圈時要顯示才使用v-for -->
+                        <tr v-for="product in products" :key="product.id">
                             <td style="width: 200px">
-                                <div style="height: 100px; background-size: cover; background-position: center"></div>
+                                <div style="height: 100px; background-size: cover; background-position: center"
+                                    :style="{backgroundImage:`url(${product.imageUrl})`}"></div>
                             </td>
                             <td>
                                 {{ }}

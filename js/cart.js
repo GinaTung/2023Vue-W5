@@ -14,7 +14,9 @@ const app = createApp({
       axios
         .get(`${apiUrl}/api/${apiPath}/products/all`)
         .then((res) => {
-          console.log(res);
+          console.log("產品列表:", res.data.products);
+
+          this.products = res.data.products;
         })
         .catch((err) => {
           console.log(err.data.message);
