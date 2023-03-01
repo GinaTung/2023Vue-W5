@@ -5,7 +5,7 @@ const apiPath = "yuling202202";
 
 const productModal = {
   // 當id變動時，取得遠端資料，呈現modal
-  props: ["id", "addToCart"],
+  props: ["id", "addToCart", "openModal"],
   data() {
     return {
       // 需實體化深層拷貝??
@@ -19,16 +19,18 @@ const productModal = {
   watch: {
     id() {
       console.log("productModal:", this.id);
-      axios
-        .get(`${apiUrl}/api/${apiPath}/product/${this.id}`)
-        .then((res) => {
-          console.log("單一產品:", res.data.product);
-          this.tempProduct = res.data.product;
-        })
-        .catch((err) => {
-          console.log(err.data.message);
-        });
-      this.modal.show();
+      if (this.id) {
+        axios
+          .get(`${apiUrl}/api/${apiPath}/product/${this.id}`)
+          .then((res) => {
+            console.log("單一產品:", res.data.product);
+            this.tempProduct = res.data.product;
+          })
+          .catch((err) => {
+            console.log(err.data.message);
+          });
+        this.modal.show();
+      }
     },
   },
   methods: {
@@ -39,6 +41,12 @@ const productModal = {
   mounted() {
     this.modal = new bootstrap.Modal(this.$refs.modal);
     // this.modal.show();
+    // 監聽DOM，當modal關閉時，要做其他事情
+    this.$refs.modal.addEventListener("hidden.bs.modal", (event) => {
+      // do something...
+      console.log("Modal被關閉了");
+      this.openModal("");
+    });
   },
 };
 
