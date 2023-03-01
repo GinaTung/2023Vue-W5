@@ -36,6 +36,7 @@
                         <!-- 需跑迴圈時要顯示才使用v-for -->
                         <tr v-for="product in products" :key="product.id">
                             <td style="width: 200px">
+                                <!-- url是css語法格式 -->
                                 <div style="height: 100px; background-size: cover; background-position: center"
                                     :style="{backgroundImage:`url(${product.imageUrl})`}"></div>
                             </td>
