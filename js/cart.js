@@ -20,6 +20,11 @@ configure({
   //validateOnInput: true, // 此項為true時，輸入文字就會立即進行驗證
 });
 
+VeeValidate.configure({
+  generateMessage: VeeValidateI18n.localize("zh_TW"),
+  validateOnInput: true, // 調整為：輸入文字時，就立即進行驗證
+});
+
 const apiUrl = "https://vue3-course-api.hexschool.io/v2";
 const apiPath = "yuling202202";
 
@@ -70,7 +75,7 @@ const productModal = {
   },
 };
 
-const app = createApp({
+const app = Vue.createApp({
   data() {
     return {
       products: [],
@@ -88,11 +93,6 @@ const app = createApp({
         message: "",
       },
     };
-  },
-  components: {
-    VForm: Form,
-    VField: Field,
-    ErrorMessage: ErrorMessage,
   },
   methods: {
     getProducts() {
@@ -163,7 +163,7 @@ const app = createApp({
         .delete(`${apiUrl}/api/${apiPath}/cart/${item.id}`)
         .then((res) => {
           console.log("刪除購物車:", res.data);
-          alert("刪除購物車:", res.data.message);
+          alert(`刪除購物車商品:${item.product.title}`);
           this.getCarts();
           this.loadingItem = "";
         })
@@ -173,9 +173,10 @@ const app = createApp({
     },
     deleteAllCarts() {
       axios
-        .delete(`${site}/api/${api_path}/carts`)
+        .delete(`${apiUrl}/api/${apiPath}/carts`)
         .then((res) => {
-          alert("清除全部商品:", res.data.message);
+          console.log("清除購物車全部商品:", res.data.message);
+          alert("清除購物車全部商品已完成");
           this.getCarts();
         })
         .catch((err) => {
@@ -185,12 +186,12 @@ const app = createApp({
     createOrder() {
       const order = this.form;
       axios
-        .post(`${site}/api/${api_path}/order`, { data: order })
+        .post(`${apiUrl}/api/${apiPath}/order`, { data: order })
         .then((res) => {
-          alert(res.data.message);
+          console.log("已建立訂單:", res);
+          alert(`已建立訂單，訂單總金額:${res.data.total}`);
           this.$refs.form.resetForm();
           this.getCarts();
-          console.log(res);
         })
         .catch((err) => {
           alert(err.data.message);
@@ -200,6 +201,9 @@ const app = createApp({
   //   區域註冊
   components: {
     productModal,
+    VForm: Form,
+    VField: Field,
+    ErrorMessage: ErrorMessage,
   },
   mounted() {
     this.getProducts();
