@@ -1,5 +1,25 @@
 import { createApp } from "https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.29/vue.esm-browser.min.js";
 
+const { defineRule, Form, Field, ErrorMessage, configure } = VeeValidate;
+const { required, email, min, max } = VeeValidateRules;
+const { localize, loadLocaleFromURL } = VeeValidateI18n;
+
+defineRule("required", required);
+defineRule("email", email);
+defineRule("min", min);
+defineRule("max", max);
+
+// 載入多國語系
+loadLocaleFromURL(
+  "https://unpkg.com/@vee-validate/i18n@4.1.0/dist/locale/zh_TW.json"
+);
+
+// 設定
+configure({
+  generateMessage: localize("zh_TW"),
+  //validateOnInput: true, // 此項為true時，輸入文字就會立即進行驗證
+});
+
 const apiUrl = "https://vue3-course-api.hexschool.io/v2";
 const apiPath = "yuling202202";
 
@@ -58,7 +78,21 @@ const app = createApp({
       cart: "",
       //   修正(讀取效果，wach錯誤)
       loadingItem: "", //存ID
+      form: {
+        user: {
+          name: "",
+          email: "",
+          tel: "",
+          address: "",
+        },
+        message: "",
+      },
     };
+  },
+  components: {
+    VForm: Form,
+    VField: Field,
+    ErrorMessage: ErrorMessage,
   },
   methods: {
     getProducts() {
@@ -129,11 +163,37 @@ const app = createApp({
         .delete(`${apiUrl}/api/${apiPath}/cart/${item.id}`)
         .then((res) => {
           console.log("刪除購物車:", res.data);
+          alert("刪除購物車:", res.data.message);
           this.getCarts();
           this.loadingItem = "";
         })
         .catch((err) => {
           console.log(err.data.message);
+        });
+    },
+    deleteAllCarts() {
+      axios
+        .delete(`${site}/api/${api_path}/carts`)
+        .then((res) => {
+          alert("清除全部商品:", res.data.message);
+          this.getCarts();
+        })
+        .catch((err) => {
+          alert(err.data.message);
+        });
+    },
+    createOrder() {
+      const order = this.form;
+      axios
+        .post(`${site}/api/${api_path}/order`, { data: order })
+        .then((res) => {
+          alert(res.data.message);
+          this.$refs.form.resetForm();
+          this.getCarts();
+          console.log(res);
+        })
+        .catch((err) => {
+          alert(err.data.message);
         });
     },
   },
@@ -147,4 +207,7 @@ const app = createApp({
   },
 });
 // 全欲註冊 app.component('productModal',productModal)
+// app.component("VForm", VeeValidate.Form);
+// app.component("VField", VeeValidate.Field);
+// app.component("ErrorMessage", VeeValidate.ErrorMessage);
 app.mount("#app");
